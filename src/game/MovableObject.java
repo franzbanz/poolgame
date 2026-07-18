@@ -32,6 +32,7 @@ public abstract class MovableObject extends GameObject {
 	public void move() {
 
 //		use double data type for more precision
+//		TODO: is there such a thing as init() in java?
 		if (!positionInitialized) {
 			tmpX = getX();
 			tmpY = getY();
@@ -42,9 +43,7 @@ public abstract class MovableObject extends GameObject {
 //		speedX = Math.max(-maxSpeed, Math.min(speedX, maxSpeed));
 //		speedY = Math.max(-maxSpeed, Math.min(speedY, maxSpeed));
 
-//		apply drag
-		velocity = Math.sqrt(speedX * speedX + speedY * speedY);
-
+		velocity = getVelocity();
 		if (velocity > 0) {
 			double newVelocity = Math.max(0, velocity - velocity * drag);
 			speedX = speedX / velocity * newVelocity;
@@ -111,7 +110,7 @@ public abstract class MovableObject extends GameObject {
 	}
 
 	public void handleHole(MovableObject a) {
-		if (a instanceof Cueball) {
+		if (a instanceof CueBall) {
 			a.setSpeedX(0);
 			a.setSpeedY(0);
 			a.setTmpX(InitialConditions.getCenter().x);
@@ -158,7 +157,7 @@ public abstract class MovableObject extends GameObject {
 	}
 
 	public double getVelocity() {
-		return velocity;
+		return Math.sqrt(speedX * speedX + speedY * speedY);
 	}
 
 }

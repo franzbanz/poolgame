@@ -10,8 +10,8 @@ import ch.aplu.jgamegrid.Location;
 public class GameLoop {
 
 	public static void main(String[] args) {
-//		weird X11 fix to stop lag
-		System.setProperty("sun.java2d.opengl", "true");
+//		weird X11 fix to stop lag: -Dsun.java2d.opengl=true
+//		does not work on Wayland
 
 //		initialize gamegrid
 		GameGrid gameGrid = new GameGrid(InitialConditions.getWidth(), InitialConditions.getHeight(), 1, null, false);
@@ -20,15 +20,15 @@ public class GameLoop {
 		gameGrid.setSimulationPeriod(15);
 
 //		initialize cueball
-		Cueball cueball = new Cueball();
-		cueball.setCollisionCircle(new Point(0, 0), InitialConditions.getBallSize() / 2);
-		gameGrid.addActor(cueball, InitialConditions.getCenter());
+		CueBall cueBall = new CueBall();
+		cueBall.setCollisionCircle(new Point(0, 0), InitialConditions.getBallSize() / 2);
+		gameGrid.addActor(cueBall, InitialConditions.getCenter());
 
 //		initialize balls
 		int i = 0;
 		ArrayList<Ball> balls = new ArrayList<Ball>();
 		for (Location loc : InitialConditions.getBallLocations()) {
-			Ball ball = spawnBall(gameGrid, player, loc, InitialConditions.getBallLocations().size(),
+			Ball ball = spawnBall(gameGrid, cueBall, loc, InitialConditions.getBallLocations().size(),
 					InitialConditions.getBallSize(), InitialConditions.getSprite(i + 3));
 			balls.add(ball);
 			i++;
@@ -41,7 +41,7 @@ public class GameLoop {
 //		initialize holes
 		ArrayList<Hole> holes = new ArrayList<Hole>();
 		for (Location loc : InitialConditions.getHoleLocations()) {
-			Hole hole = spawnHole(gameGrid, player, loc, InitialConditions.getHoleLocations().size(),
+			Hole hole = spawnHole(gameGrid, cueBall, loc, InitialConditions.getHoleLocations().size(),
 					InitialConditions.getHoleSize());
 			holes.add(hole);
 		}
@@ -50,19 +50,18 @@ public class GameLoop {
 //		initialize players and turns
 		TurnHandler turnHandler = new TurnHandler();
 		gameGrid.addActor(turnHandler, InitialConditions.getCenter());
-		HumanPlayer human = new HumanPlayer();
-		OpponentPlayer opponent = new OpponentPlayer();
+		HumanPlayer human = new HumanPlayer(cueBall, turnHandler);
+		OpponentPlayer opponent = new OpponentPlayer(cueBall, balls, turnHandler);
 		gameGrid.addMouseListener(human, GGMouse.lRelease);
-
-		gameGrid.show();
-		gameGrid.doRun();
 
 		turnHandler.init(new Participant[] { human, opponent }, cueBall, balls);
 		turnHandler.startGame();
 
+		gameGrid.show();
+		gameGrid.doRun();
 	}
 
-	public static Ball spawnBall(GameGrid gameGrid, Cueball player, Location loc, int numBalls, int ballSize,
+	public static Ball spawnBall(GameGrid gameGrid, CueBall player, Location loc, int numBalls, int ballSize,
 			String sprite) {
 
 		Ball ball = new Ball(sprite);
@@ -80,7 +79,7 @@ public class GameLoop {
 		}
 	}
 
-	public static Hole spawnHole(GameGrid gameGrid, Cueball player, Location loc, int numHoles, int holeSize) {
+	public static Hole spawnHole(GameGrid gameGrid, CueBall player, Location loc, int numHoles, int holeSize) {
 
 		Hole hole = new Hole();
 		gameGrid.addActor(hole, loc);

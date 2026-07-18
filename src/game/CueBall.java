@@ -1,8 +1,8 @@
 package game;
 
-public class Cueball extends MovableObject {
+public class CueBall extends MovableObject {
 
-	public Cueball() {
+	public CueBall() {
 		super(InitialConditions.getSprite(2), InitialConditions.getBallSize());
 	}
 

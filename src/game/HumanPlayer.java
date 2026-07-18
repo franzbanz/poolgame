@@ -1,36 +1,33 @@
 package game;
 
-import ch.aplu.jgamegrid.Actor;
 import ch.aplu.jgamegrid.GGMouse;
 import ch.aplu.jgamegrid.GGMouseListener;
 import ch.aplu.jgamegrid.Location;
 
 public class HumanPlayer implements Participant, GGMouseListener {
 
+	CueBall cueBall;
+	TurnHandler turnHandler;
+
+	public HumanPlayer(CueBall cueBall, TurnHandler turnHandler) {
+		this.cueBall = cueBall;
+		this.turnHandler = turnHandler;
+	}
+
+	@Override
+	public void startTurn() {
+//		TODO: not needed, might remove later...
+	}
+
 	public boolean mouseEvent(GGMouse mouse) {
-		Location mouseLoc = gameGrid.getMouseLocation();
+		if (turnHandler.getActiveParticipant() != this || !turnHandler.readyToShoot()) {
+			return true;
+		}
+		Location mouseLoc = cueBall.gameGrid.getMouseLocation();
 
-		speedX = -(getTmpX() - mouseLoc.x) / InitialConditions.getSensitivity();
-		speedY = -(getTmpY() - mouseLoc.y) / InitialConditions.getSensitivity();
-
+		cueBall.strike(-(cueBall.getX() - mouseLoc.x) / InitialConditions.getSensitivity(),
+				-(cueBall.getY() - mouseLoc.y) / InitialConditions.getSensitivity());
+		turnHandler.endTurn();
 		return true;
 	}
-
-	public void opponentsTurn() {
-
-		while (InitialConditions.getIsPlayersTurn() == false) {
-			if (velocity == 0) {
-
-				int searchDistance = 500;
-
-				Actor goal = getNeighbours(searchDistance, Ball.class).get(1);
-
-				speedX = -(getTmpX() - goal.getX()) / InitialConditions.getSensitivity();
-				speedY = -(getTmpY() - goal.getX()) / InitialConditions.getSensitivity();
-				InitialConditions.setIsPlayersTurn(true);
-			}
-
-		}
-	}
-
 }
