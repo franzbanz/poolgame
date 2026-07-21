@@ -5,6 +5,10 @@ import ch.aplu.jgamegrid.Location;
 
 public abstract class MovableObject extends GameObject {
 
+	enum BallType {
+		SOLID, STRIPE, EIGHT, CUE
+	};
+
 	double drag;
 	double speedX;
 	double speedY;
@@ -14,10 +18,13 @@ public abstract class MovableObject extends GameObject {
 	double velocity;
 	int size;
 	boolean positionInitialized;
+	boolean sunkBall;
+	BallType ballType;
 
-	public MovableObject(String sprite, int size) {
+	public MovableObject(String sprite, int size, BallType ballType) {
 		super(sprite);
 		this.size = size;
+		this.ballType = ballType;
 
 		speedX = 0.0;
 		speedY = 0.0;
@@ -26,12 +33,15 @@ public abstract class MovableObject extends GameObject {
 		drag = InitialConditions.getDrag();
 		maxSpeed = InitialConditions.getMaxSpeed();
 		positionInitialized = false;
+		sunkBall = false;
 	}
 
 	@Override
 	public void move() {
 
-//		use double data type for more precision
+		if (sunkBall == true) {
+			return;
+		}
 //		TODO: is there such a thing as init() in java?
 		if (!positionInitialized) {
 			tmpX = getX();
@@ -40,8 +50,8 @@ public abstract class MovableObject extends GameObject {
 		}
 
 //		apply upper speedlimit
-//		speedX = Math.max(-maxSpeed, Math.min(speedX, maxSpeed));
-//		speedY = Math.max(-maxSpeed, Math.min(speedY, maxSpeed));
+		speedX = Math.max(-maxSpeed, Math.min(speedX, maxSpeed));
+		speedY = Math.max(-maxSpeed, Math.min(speedY, maxSpeed));
 
 		velocity = getVelocity();
 		if (velocity > 0) {
@@ -113,11 +123,29 @@ public abstract class MovableObject extends GameObject {
 		if (a instanceof CueBall) {
 			a.setSpeedX(0);
 			a.setSpeedY(0);
-			a.setTmpX(InitialConditions.getCenter().x);
-			a.setTmpY(InitialConditions.getCenter().y);
+			a.setTmpX(InitialConditions.getStart().x);
+			a.setTmpY(InitialConditions.getStart().y);
 		} else if (a instanceof Ball) {
-			a.removeSelf();
+			a.setSunkBall(true);
+			a.setSpeedX(0.0);
+			a.setSpeedY(0.0);
+			a.setTmpX(1000); // TODO: not that elegant, but im not sure if i can
+			a.setTmpY(1000); // remove actors from the grid without breaking anything
+			a.hide();
 		}
+		TurnHandler.countPoints(a);
+	}
+
+	public BallType getBallType() {
+		return ballType;
+	}
+
+	public void setSunkBall(boolean sunkBall) {
+		this.sunkBall = sunkBall;
+	}
+
+	public boolean getSunkBall() {
+		return sunkBall;
 	}
 
 	public double getSpeedX() {

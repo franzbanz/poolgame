@@ -11,6 +11,8 @@ public class OpponentPlayer implements Participant {
 	CueBall cueBall;
 	ArrayList<Ball> balls;
 	TurnHandler turnHandler;
+	Actor goal;
+	double distance = 1000;
 
 	public OpponentPlayer(CueBall cueBall, ArrayList<Ball> balls, TurnHandler turnHandler) {
 		this.cueBall = cueBall;
@@ -20,7 +22,15 @@ public class OpponentPlayer implements Participant {
 
 	@Override
 	public void startTurn() {
-		Actor goal = balls.getLast();
+
+		for (Ball ball : balls) {
+			double newDistance = Math.sqrt((ball.getTmpX() - cueBall.getTmpX()) * (ball.getTmpX() - cueBall.getTmpX())
+					+ (ball.getTmpY() - cueBall.getTmpY()) * (ball.getTmpY() - cueBall.getTmpY()));
+			if (newDistance < distance && !ball.getSunkBall()) {
+				goal = ball;
+				distance = newDistance;
+			}
+		}
 
 		cueBall.strike(-(cueBall.getTmpX() - goal.getX()) / InitialConditions.getSensitivity(),
 				-(cueBall.getTmpY() - goal.getY()) / InitialConditions.getSensitivity());

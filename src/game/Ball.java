@@ -2,13 +2,13 @@ package game;
 
 public class Ball extends MovableObject {
 
-		public Ball(String sprite) {
-			super(sprite, InitialConditions.getBallSize());
-		}
+	public Ball(String sprite, BallType ballType) {
+		super(sprite, InitialConditions.getBallSize(), ballType);
+	}
 
-		@Override
-		public void act() {
-			move();
-		}
+	@Override
+	public void act() {
+		move();
+	}
 
 }

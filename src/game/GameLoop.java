@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import ch.aplu.jgamegrid.GGMouse;
 import ch.aplu.jgamegrid.GameGrid;
 import ch.aplu.jgamegrid.Location;
+import game.MovableObject.BallType;
 
 public class GameLoop {
 
@@ -22,14 +23,15 @@ public class GameLoop {
 //		initialize cueball
 		CueBall cueBall = new CueBall();
 		cueBall.setCollisionCircle(new Point(0, 0), InitialConditions.getBallSize() / 2);
-		gameGrid.addActor(cueBall, InitialConditions.getCenter());
+		gameGrid.addActor(cueBall, InitialConditions.getStart());
 
 //		initialize balls
 		int i = 0;
 		ArrayList<Ball> balls = new ArrayList<Ball>();
 		for (Location loc : InitialConditions.getBallLocations()) {
 			Ball ball = spawnBall(gameGrid, cueBall, loc, InitialConditions.getBallLocations().size(),
-					InitialConditions.getBallSize(), InitialConditions.getSprite(i + 3));
+					InitialConditions.getBallSize(), InitialConditions.getSprite(i + 3),
+					InitialConditions.getBallType(i));
 			balls.add(ball);
 			i++;
 		}
@@ -57,17 +59,21 @@ public class GameLoop {
 		turnHandler.init(new Participant[] { human, opponent }, cueBall, balls);
 		turnHandler.startGame();
 
+//		initialize line drawing function
+		Graphics graphics = new Graphics(gameGrid.getBg(), cueBall, balls);
+		gameGrid.addActor(graphics, InitialConditions.getCenter());
+
 		gameGrid.show();
 		gameGrid.doRun();
 	}
 
 	public static Ball spawnBall(GameGrid gameGrid, CueBall player, Location loc, int numBalls, int ballSize,
-			String sprite) {
+			String sprite, BallType ballType) {
 
-		Ball ball = new Ball(sprite);
+		Ball ball = new Ball(sprite, ballType);
 		gameGrid.addActor(ball, loc);
 		player.addCollisionActor(ball);
-		ball.setCollisionCircle(new Point(0, 0), InitialConditions.getBallSize() / 2);
+		ball.setCollisionCircle(new Point(0, 0), InitialConditions.getBallSize() / 2 + 1); // because 25/2 is a decimal
 		return ball;
 	}
 

@@ -11,15 +11,16 @@ public class InitialConditions {
 	static Location center = new Location(width / 2, height / 2);;
 	static Location upperLeft = new Location(56, 56);
 	static Location lowerRight = new Location(width - 57, height - 57);
+	static Location start = new Location(center.x, center.y + 300);
 	static int ballSize = 25;
 	static int holeSize = 48;
-	static double maxSpeed = 20.0;
+	static double maxSpeed = 40.0;
 	static double drag = 0.02;
 	static int spacing = ballSize + 1;
 	static int offset = 200;
 	static int holeOffset = 19;
 	static int rowHeight = (int) Math.round(spacing * Math.sqrt(3) / 2);
-	static int sensitivity = 20;
+	static int sensitivity = 15;
 	static boolean isPlayersTurn = true;
 
 	static String[] sprites = { "sprites/table.jpg", "sprites/tableCollision.png", "sprites/0.png", "sprites/1.png",
@@ -28,6 +29,8 @@ public class InitialConditions {
 			"sprites/14.png", "sprites/15.png" };
 	static ArrayList<Location> ballLocations = new ArrayList<Location>();
 	static ArrayList<Location> holeLocations = new ArrayList<Location>();
+	static ArrayList<MovableObject.BallType> ballTypes = new ArrayList<MovableObject.BallType>();
+//	should make an extra class for ball locations, types and sprites, otherwise index error very likely
 
 	static {
 		ballLocations.add(new Location(center.x, center.y - offset));
@@ -56,6 +59,27 @@ public class InitialConditions {
 		holeLocations.add(new Location(upperLeft.x - holeOffset, lowerRight.y + holeOffset));
 		holeLocations.add(new Location(upperLeft.x - holeOffset, height / 2));
 		holeLocations.add(new Location(lowerRight.x + holeOffset, height / 2));
+
+		ballTypes.add(MovableObject.BallType.SOLID);
+
+		ballTypes.add(MovableObject.BallType.SOLID);
+		ballTypes.add(MovableObject.BallType.SOLID);
+
+		ballTypes.add(MovableObject.BallType.EIGHT);
+		ballTypes.add(MovableObject.BallType.SOLID);
+		ballTypes.add(MovableObject.BallType.SOLID);
+
+		ballTypes.add(MovableObject.BallType.SOLID);
+		ballTypes.add(MovableObject.BallType.SOLID);
+		ballTypes.add(MovableObject.BallType.STRIPE);
+		ballTypes.add(MovableObject.BallType.STRIPE);
+
+		ballTypes.add(MovableObject.BallType.STRIPE);
+		ballTypes.add(MovableObject.BallType.STRIPE);
+		ballTypes.add(MovableObject.BallType.STRIPE);
+		ballTypes.add(MovableObject.BallType.STRIPE);
+		ballTypes.add(MovableObject.BallType.STRIPE);
+
 	}
 
 	public static String getSprite(int i) {
@@ -82,8 +106,16 @@ public class InitialConditions {
 		return center;
 	}
 
+	public static Location getStart() {
+		return start;
+	}
+
 	public static int getBallSize() {
 		return ballSize;
+	}
+
+	public static MovableObject.BallType getBallType(int i) {
+		return ballTypes.get(i);
 	}
 
 	public static int getHoleSize() {

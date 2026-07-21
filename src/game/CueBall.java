@@ -3,7 +3,7 @@ package game;
 public class CueBall extends MovableObject {
 
 	public CueBall() {
-		super(InitialConditions.getSprite(2), InitialConditions.getBallSize());
+		super(InitialConditions.getSprite(2), InitialConditions.getBallSize(), MovableObject.BallType.CUE);
 	}
 
 	@Override
